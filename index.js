@@ -101,3 +101,80 @@ strategy.setStrategry(td);
 log(strategy.insuranceProvider.getQuote());
 
 log('/// Proxy Pattern ///');
+/**
+ * Problem: network calls are expensive. Implement a proxy to abstract the complex logic,
+ * and optimize the application to send less number of API calls.
+ */
+
+function CarPrices() {
+  this.price = 0;
+
+  this.getCarPrice = function (model) {
+    switch (model) {
+      case 'accord':
+        this.price = 40000;
+        break;
+      case 'civic':
+        this.price = 32000;
+        break;
+      default:
+        break;
+    }
+    // log('API call in progress. Please wait...');
+    // return this.price;
+
+    // Simulates network call that takes 2s in this case
+    return new Promise((resolve) => {
+      log('API call in progress. Please wait...');
+      const start = Date.now();
+      setTimeout(() => {
+        resolve(this.price);
+        const end = Date.now();
+        log(
+          `Received results from API in ${(end - start) / 1000}s. Price is: ${
+            this.price
+          }`
+        );
+      }, 2000);
+    });
+  };
+}
+
+function Proxy(model) {
+  this.models = new Map();
+  this.carPricesApi = new CarPrices();
+
+  this.getCarPrice = async function () {
+    if (!this.models.has(model)) {
+      const carPrice = await this.carPricesApi.getCarPrice(model);
+
+      if (carPrice > 0) {
+        this.models.set(model, carPrice);
+
+        for (const [key, value] of this.models) {
+          log(`${key}: ${value}`);
+        }
+      }
+      log(`${this.models.get(model) && "Couldn't find cached value"}`);
+      return carPrice;
+    } else {
+      log(`${this.models.get(model) && 'Using cached value'}`);
+      return this.models.get(model);
+    }
+  };
+}
+
+(async function () {
+  const prices = new Proxy('accord');
+  log(await prices.getCarPrice());
+  log(await prices.getCarPrice());
+  log(await prices.getCarPrice());
+  log(await prices.getCarPrice());
+})();
+// log(prices.getCarPrice())
+// log(prices.getCarPrice())
+// log(prices.getCarPrice())
+// log(prices.getCarPrice())
+// log(`prices.getCarPrice() ${prices.getCarPrice()}`);
+// log(`prices.getCarPrice() ${prices.getCarPrice()}`);
+// log(`prices.getCarPrice() ${prices.getCarPrice()}`);
