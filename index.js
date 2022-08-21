@@ -171,10 +171,3 @@ function Proxy(model) {
   log(await prices.getCarPrice());
   log(await prices.getCarPrice());
 })();
-// log(prices.getCarPrice())
-// log(prices.getCarPrice())
-// log(prices.getCarPrice())
-// log(prices.getCarPrice())
-// log(`prices.getCarPrice() ${prices.getCarPrice()}`);
-// log(`prices.getCarPrice() ${prices.getCarPrice()}`);
-// log(`prices.getCarPrice() ${prices.getCarPrice()}`);
