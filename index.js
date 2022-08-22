@@ -25,8 +25,8 @@ function Vehicle(make, year) {
 }
 
 const hondaInfo = new Vehicle('Honda', 'Accord');
-log(hondaInfo);
-log(hondaInfo.makeInfo);
+// log(hondaInfo);
+// log(hondaInfo.makeInfo);
 
 // Singleton Pattern
 // Problem: Assume we have a database for an application. We need a single database connection
@@ -54,12 +54,12 @@ const db = (function () {
   };
 })();
 
-const dbConnection = db.getInstance();
-const dbConnection1 = db.getInstance();
-const dbConnection2 = db.getInstance();
-log(dbConnection);
-log(dbConnection1);
-log(dbConnection2); // We see only one time database connection was initialized. That's singleton!
+// const dbConnection = db.getInstance();
+// const dbConnection1 = db.getInstance();
+// const dbConnection2 = db.getInstance();
+// log(dbConnection);
+// log(dbConnection1);
+// log(dbConnection2); // We see only one time database connection was initialized. That's singleton!
 
 // Strategy Pattern
 log('/// Strategy Pattern ///');
@@ -94,11 +94,14 @@ function InsuranceStrategy() {
 
 // InsuranceStrategy will have setStrategy to be able to set the insurance provider of choice
 // Since all providers implement getQuote method, it's easy to
-const strategy = new InsuranceStrategy();
-log(strategy);
+
+// const strategy = new InsuranceStrategy();
+// log(strategy);
+
 // For example, if we want to get quote from TD, then set the strategy to TD, and get quotation by calling getQuote()
-strategy.setStrategry(td);
-log(strategy.insuranceProvider.getQuote());
+
+// strategy.setStrategry(td);
+// log(strategy.insuranceProvider.getQuote());
 
 log('/// Proxy Pattern ///');
 /**
@@ -164,10 +167,64 @@ function Proxy(model) {
   };
 }
 
-(async function () {
-  const prices = new Proxy('accord');
-  log(await prices.getCarPrice());
-  log(await prices.getCarPrice());
-  log(await prices.getCarPrice());
-  log(await prices.getCarPrice());
-})();
+/**
+ * We call Proxy with desired car model. If car model exists, it will return price.
+ * Also, caches the car price in a Map. This will help us eliminate expensive
+ * operations such as calling an API for the same price again. Optionally can
+ * implement cache time. Uncomment below to test the Proxy Pattern!
+ */
+// (async function () {
+//   const prices = new Proxy('accord');
+//   log(await prices.getCarPrice());
+//   log(await prices.getCarPrice());
+//   log(await prices.getCarPrice());
+//   log(await prices.getCarPrice());
+// })();
+
+log('/// Method Chaining Pattern ///');
+/**
+ * Problem: Build an ATM using Method Chaining pattern
+ */
+
+function ATM(amountToWithdraw) {
+  this.amount = parseInt(amountToWithdraw);
+  this.allowedDenominations = new Set([100, 50, 20, 10, 5, 1]); // Valid USD denominations
+
+  this.denomination = function (denomination) {
+    if (!this.allowedDenominations.has(parseInt(denomination))) {
+      new Error(
+        'Unable to dispense money in the form of requested denomination'
+      );
+      return;
+    }
+
+    const numOfBillsPossible = Math.floor(this.amount / denomination);
+    this.amount = this.amount - numOfBillsPossible * denomination; // Remove possible amount based on given denomination from the total amount, so we will be left over with remaining money to work with.
+    log(
+      `$${denomination} x ${numOfBillsPossible} = $${
+        denomination * numOfBillsPossible
+      }. Balance: $${this.amount}`
+    );
+
+    // log(
+    //   `You will get ${numOfBillsPossible} bills in the form of $${denomination} denomination.`
+    // );
+    // log(
+    //   `Choose denominations for remaining balance of $${this.amount}`
+    // );
+    return this; // returning this will allow us to call `denomination` method on the same context. Sort of creating a closed tube.
+  };
+}
+
+// const atm = new ATM(228);
+// atm.denomination(10).denomination(5).denomination(1);
+
+log('/// Recursion Pattern ///');
+const factorial = (n) => {
+  if (!n) return;
+
+  if (n === 1 || n === 0) return 1;
+  else return n * factorial(n - 1);
+};
+
+console.log(factorial(4));
